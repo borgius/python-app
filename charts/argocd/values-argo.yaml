@@ -14,7 +14,7 @@ applicationSet:
   replicas: 1
 
 global:
-  domain: argocd.test.com
+  domain: argocd.lvh.me
 
 certificate:
   enabled: true

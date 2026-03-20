@@ -4,7 +4,7 @@ metadata:
   name: python-app
 spec:
   rules:
-  - host: "python-app.test.com"
+  - host: "python-app.lvh.me"
     http:
         paths:
         - path: /
