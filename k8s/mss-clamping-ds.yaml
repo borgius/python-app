@@ -27,10 +27,20 @@ spec:
             - bash
             - -c
             - |
-              nsenter -t 1 -m -n -- bash -c \
-                'iptables -t mangle -C FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1460 2>/dev/null \
-                 || iptables -t mangle -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1460 \
-                 && echo "MSS clamping applied"'
+              nsenter -t 1 -m -n -- bash -c '
+                # Remove any stale fixed-MSS rules that may have been applied before
+                iptables -t mangle -D FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1460 2>/dev/null || true
+
+                # Apply dynamic MSS clamping — clamps to outgoing interface MTU minus IP/TCP headers
+                iptables -t mangle -C FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu 2>/dev/null \
+                  || iptables -t mangle -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+
+                # Also clamp traffic originating from the node itself (e.g. runner binary downloads)
+                iptables -t mangle -C OUTPUT -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu 2>/dev/null \
+                  || iptables -t mangle -A OUTPUT -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+
+                echo "MSS clamping applied (clamp-mss-to-pmtu)"
+              '
       containers:
         - name: pause
           image: registry.k8s.io/pause:3.9

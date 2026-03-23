@@ -1,6 +1,6 @@
 site_name: 'python-app'
 site_description: 'Main documentation for the python-app'
-repo_url: https://github.com/ricardoandre97/python-app
+repo_url: https://github.com/borgius/python-app
 edit_uri: edit/main/docs
 
 plugins:
