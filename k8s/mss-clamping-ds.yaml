@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: mss-clamping
+  namespace: kube-system
+  labels:
+    app: mss-clamping
+spec:
+  selector:
+    matchLabels:
+      app: mss-clamping
+  template:
+    metadata:
+      labels:
+        app: mss-clamping
+    spec:
+      hostPID: true
+      hostNetwork: true
+      tolerations:
+        - operator: Exists
+      initContainers:
+        - name: mss-clamp
+          image: ubuntu:22.04
+          securityContext:
+            privileged: true
+          command:
+            - bash
+            - -c
+            - |
+              nsenter -t 1 -m -n -- bash -c \
+                'iptables -t mangle -C FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1460 2>/dev/null \
+                 || iptables -t mangle -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1460 \
+                 && echo "MSS clamping applied"'
+      containers:
+        - name: pause
+          image: registry.k8s.io/pause:3.9

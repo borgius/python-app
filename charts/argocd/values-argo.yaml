@@ -20,9 +20,14 @@ certificate:
   enabled: true
 
 server:
+  extraArgs:
+    - --insecure
   ingress:
     annotations:
-      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     enabled: true
     ingressClassName: nginx
     tls: true
