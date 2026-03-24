@@ -64,13 +64,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: argocd version --client          
 
-      # - name: Install argocd
-      #   shell: bash
-      #   run: |
-      #     curl -ksSL -o /tmp/argocd http://argocd-server.argocd/download/argocd-linux-amd64
-      #     chmod +x /tmp/argocd
-      #     sudo mv ./argocd /usr/local/bin/argocd
-
+      - name: Install argocd
+        shell: bash
+        run: |
+          curl -sSL -o /tmp/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x /tmp/argocd
+          sudo mv ./argocd /usr/local/bin/argocd
       - name: Argocd app sync
         shell: bash
         run: |
