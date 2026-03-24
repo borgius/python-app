@@ -59,9 +59,6 @@ jobs:
         with:
           message: 'Updates values.yaml with commit ${{needs.ci.outputs.commit_id}}'
 
-      - uses: clowdhaus/argo-cd-action/@main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: argocd version --client          
 
       - name: Install argocd
