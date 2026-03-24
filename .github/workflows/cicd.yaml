@@ -65,10 +65,10 @@ jobs:
         run: |
           curl -sSL -o /tmp/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           chmod +x /tmp/argocd
-          sudo mv ./argocd /usr/local/bin/argocd
+          sudo mv /tmp/argocd /usr/local/bin/argocd
 
       - run: argocd version --client          
-      
+
       - name: Argocd app sync
         shell: bash
         run: |
