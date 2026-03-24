@@ -2,7 +2,7 @@ replicaCount: 1
 image:
   repository: borgius/python-app
   pullPolicy: IfNotPresent
-  tag: 4a954d
+  tag: de67d2
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
