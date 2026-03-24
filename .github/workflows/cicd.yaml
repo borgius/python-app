@@ -59,7 +59,6 @@ jobs:
         with:
           message: 'Updates values.yaml with commit ${{needs.ci.outputs.commit_id}}'
 
-      - run: argocd version --client          
 
       - name: Install argocd
         shell: bash
@@ -67,6 +66,9 @@ jobs:
           curl -sSL -o /tmp/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           chmod +x /tmp/argocd
           sudo mv ./argocd /usr/local/bin/argocd
+
+      - run: argocd version --client          
+      
       - name: Argocd app sync
         shell: bash
         run: |
