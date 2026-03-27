@@ -21,9 +21,11 @@ jobs:
         uses: docker/setup-buildx-action@v4    
 
       - name: Shorten commit id
+        id: shorten_commit
         shell: bash
         run: |
           echo "COMMIT_ID=${GITHUB_SHA::6}" >> "$GITHUB_ENV"
+          echo "commit_id=${GITHUB_SHA::6}" >> "$GITHUB_OUTPUT"
       -
         name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -35,9 +37,9 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: borgius/python-app:${{ env.COMMIT_ID }}
+          tags: borgius/python-app:${{ steps.shorten_commit.outputs.commit_id }}
     outputs:
-      commit_id: ${{ env.COMMIT_ID }}
+      commit_id: ${{ steps.shorten_commit.outputs.commit_id }}
 
   cd:
     needs: ci
@@ -72,5 +74,5 @@ jobs:
       - name: Argocd app sync
         shell: bash
         run: |
-          argocd login argocd-server.argocd --insecure --grpc-web --username admin --password  ${{ secrets.ARGOCD_PASSWORD }}
+          argocd login argocd-server.argocd --plaintext --grpc-web --username admin --password ${{ secrets.ARGOCD_PASSWORD }}
           argocd app sync python-app
